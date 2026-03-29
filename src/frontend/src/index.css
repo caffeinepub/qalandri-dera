@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    /* Near-black bg: #111111 => oklch ~0.13 0 0 */
+    --background: 0.13 0 0;
+    --foreground: 0.95 0 0;
+    /* Card: #1A1A1A */
+    --card: 0.17 0 0;
+    --card-foreground: 0.95 0 0;
+    --popover: 0.17 0 0;
+    --popover-foreground: 0.95 0 0;
+    /* Gold: #C9A24A => oklch ~0.70 0.12 75 */
+    --primary: 0.7 0.12 75;
+    --primary-foreground: 0.13 0 0;
+    /* Red: #C62828 => oklch ~0.46 0.18 25 */
+    --secondary: 0.46 0.18 25;
+    --secondary-foreground: 0.95 0 0;
+    /* Muted gray: #A6A6A6 => oklch ~0.68 0 0 */
+    --muted: 0.2 0 0;
+    --muted-foreground: 0.68 0 0;
+    --accent: 0.7 0.12 75;
+    --accent-foreground: 0.13 0 0;
+    --destructive: 0.46 0.18 25;
+    --destructive-foreground: 0.95 0 0;
+    --border: 0.25 0 0;
+    --input: 0.22 0 0;
+    --ring: 0.7 0.12 75;
+    --chart-1: 0.7 0.12 75;
+    --chart-2: 0.46 0.18 25;
+    --chart-3: 0.6 0.1 75;
+    --chart-4: 0.4 0.15 25;
+    --chart-5: 0.55 0.08 75;
+    --sidebar: 0.13 0 0;
+    --sidebar-foreground: 0.95 0 0;
+    --sidebar-primary: 0.7 0.12 75;
+    --sidebar-primary-foreground: 0.13 0 0;
+    --sidebar-accent: 0.2 0 0;
+    --sidebar-accent-foreground: 0.95 0 0;
+    --sidebar-border: 0.25 0 0;
+    --sidebar-ring: 0.7 0.12 75;
+
+    /* Custom restaurant tokens */
+    --gold: oklch(0.7 0.12 75);
+    --gold-light: oklch(0.8 0.1 75);
+    --red: oklch(0.46 0.18 25);
+    --red-dark: oklch(0.38 0.18 25);
+    --wa-green: #25d366;
+    --off-white: oklch(0.95 0 0);
+    --gray-muted: oklch(0.68 0 0);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif;
+    background-color: #111111;
+    color: #f2f2f2;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Cinzel", serif;
+  }
+}
+
+@layer utilities {
+  .text-gold {
+    color: var(--gold);
+  }
+  .text-red-accent {
+    color: var(--red);
+  }
+  .bg-gold {
+    background-color: var(--gold);
+  }
+  .bg-red-accent {
+    background-color: var(--red);
+  }
+  .border-gold {
+    border-color: var(--gold);
+  }
+  .border-red-accent {
+    border-color: var(--red);
+  }
+  .gold-underline {
+    border-bottom: 3px solid var(--gold);
+    padding-bottom: 0.5rem;
+  }
+}
