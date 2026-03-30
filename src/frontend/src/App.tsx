@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type * as THREE from "three";
+import * as THREE from "three";
 import type { MenuItem } from "./backend.d";
 import { useActor } from "./hooks/useActor";
 
@@ -411,58 +411,64 @@ function NavBar() {
   );
 }
 
-function EmberParticles() {
-  const pointsRef = useRef<THREE.Points>(null);
-  const COUNT = 400;
+function FogLayer({
+  z,
+  speed,
+  opacity,
+  scale,
+  offset,
+}: {
+  z: number;
+  speed: number;
+  opacity: number;
+  scale: number;
+  offset: number;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
 
-  const { positions, speeds, offsets } = useMemo(() => {
-    const pos = new Float32Array(COUNT * 3);
-    const spd = new Float32Array(COUNT);
-    const off = new Float32Array(COUNT);
-    for (let i = 0; i < COUNT; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 12;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 6;
-      spd[i] = 0.005 + Math.random() * 0.015;
-      off[i] = Math.random() * Math.PI * 2;
-    }
-    return { positions: pos, speeds: spd, offsets: off };
+  const texture = useMemo(() => {
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const grad = ctx.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      size / 2,
+    );
+    grad.addColorStop(0, "rgba(30,30,35,0.95)");
+    grad.addColorStop(0.4, "rgba(15,15,18,0.5)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.needsUpdate = true;
+    return tex;
   }, []);
 
   useFrame(({ clock }) => {
-    if (!pointsRef.current) return;
-    const pos = (
-      pointsRef.current.geometry.attributes.position as THREE.BufferAttribute
-    ).array as Float32Array;
-    const t = clock.getElapsedTime();
-    for (let i = 0; i < COUNT; i++) {
-      pos[i * 3 + 1] += speeds[i];
-      pos[i * 3] += Math.sin(t * 0.5 + offsets[i]) * 0.003;
-      if (pos[i * 3 + 1] > 6) {
-        pos[i * 3 + 1] = -6;
-        pos[i * 3] = (Math.random() - 0.5) * 12;
-        pos[i * 3 + 2] = (Math.random() - 0.5) * 6;
-      }
-    }
-    (
-      pointsRef.current.geometry.attributes.position as THREE.BufferAttribute
-    ).needsUpdate = true;
+    if (!meshRef.current) return;
+    const t = clock.getElapsedTime() * speed + offset;
+    meshRef.current.position.x = Math.sin(t * 0.3) * 2.5;
+    meshRef.current.position.y = Math.cos(t * 0.2) * 1.2;
+    meshRef.current.rotation.z = Math.sin(t * 0.15) * 0.1;
   });
 
   return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#FF8C42"
-        size={0.06}
-        sizeAttenuation
+    <mesh ref={meshRef} position={[0, 0, z]} scale={[scale, scale, 1]}>
+      <planeGeometry args={[8, 8]} />
+      <meshBasicMaterial
+        map={texture}
         transparent
-        opacity={0.85}
+        opacity={opacity}
         depthWrite={false}
+        blending={THREE.AdditiveBlending}
       />
-    </points>
+    </mesh>
   );
 }
 
@@ -475,7 +481,12 @@ function HeroBackground3D() {
       className="w-full h-full"
       gl={{ antialias: false, alpha: true }}
     >
-      <EmberParticles />
+      <FogLayer z={-3} speed={0.15} opacity={0.6} scale={3.5} offset={0} />
+      <FogLayer z={-1.5} speed={0.12} opacity={0.5} scale={2.8} offset={2.1} />
+      <FogLayer z={0} speed={0.18} opacity={0.4} scale={2.2} offset={4.5} />
+      <FogLayer z={1} speed={0.1} opacity={0.35} scale={1.8} offset={1.7} />
+      <FogLayer z={2} speed={0.22} opacity={0.25} scale={1.5} offset={3.3} />
+      <FogLayer z={2.5} speed={0.08} opacity={0.2} scale={1.2} offset={5.9} />
     </Canvas>
   );
 }
@@ -487,7 +498,7 @@ function HeroSection() {
       className="relative min-h-screen flex items-center pt-16 overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #1a0a0a 100%)",
+          "linear-gradient(135deg, #050505 0%, #0a0a0a 50%, #0d0d0d 100%)",
       }}
     >
       {/* 3D Ember Background */}
